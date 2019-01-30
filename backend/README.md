@@ -1,1 +1,0 @@
-# KQDraft REST API

@@ -1,1 +1,0 @@
-KQDraft logs go here.
