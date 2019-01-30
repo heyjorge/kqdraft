@@ -14,9 +14,8 @@ const DEFAULT_DRAW_PROBABILITY = 0.0;
 const DEFAULT_DYNAMICS_FACTOR = 0.083333333333333333333333333333333; // Default initial mean / 300
 const DEFAULT_INITIAL_MEAN = 25.0;
 const DEFAULT_INITIAL_STANDARD_DEVIATION = 8.3333333333333333333333333333333; // Default initial mean / 3
+
 $dbh = new PDO("pgsql:dbname=kqdraft;host=localhost", 'postgres', '');
-
-
 
 $gameInfo = new GameInfo(DEFAULT_BETA, DEFAULT_DRAW_PROBABILITY, DEFAULT_INITIAL_MEAN, DEFAULT_INITIAL_STANDARD_DEVIATION);
 
@@ -41,9 +40,6 @@ $calc = new TwoTeamTrueSkillCalculator();
 
 $results = $calc->calculateNewRatings($gameInfo, [$teamOne, $teamTwo], [1, 0]);
 $results = $calc->calculateNewRatings($gameInfo, [$teamOne, $teamTwo], [1, 0]);
-var_dump($results->getRating($playerOne)->getMean());
-var_dump($results->getRating($playerOne)->getStandardDeviation());
-//var_dump($results->getAllPlayers());
 
 $sth = $dbh->prepare('SELECT id_player, elo, elo_sigma, name FROM kqdraft.player');
 $sth->execute();
