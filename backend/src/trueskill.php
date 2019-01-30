@@ -14,13 +14,7 @@ const DEFAULT_DRAW_PROBABILITY = 0.0;
 const DEFAULT_DYNAMICS_FACTOR = 0.083333333333333333333333333333333; // Default initial mean / 300
 const DEFAULT_INITIAL_MEAN = 25.0;
 const DEFAULT_INITIAL_STANDARD_DEVIATION = 8.3333333333333333333333333333333; // Default initial mean / 3
-        // 'database' => [
-        //     'host'      => 'ec2-184-72-240-189.compute-1.amazonaws.com',
-        //     'user'      => 'kcwazplugqxadn',
-        //     'pass'      => 'dSa4jpFrPLuoRS3c6qs0cc0i14',
-        //     'dbname'    => 'd7rvnllnk7ut0u'
-$dbh = new PDO("pgsql:dbname=d7rvnllnk7ut0u;host=ec2-184-72-240-189.compute-1.amazonaws.com", 'kcwazplugqxadn', 'dSa4jpFrPLuoRS3c6qs0cc0i14');
-//$dbh = new PDO("pgsql:dbname=kqdraft;host=localhost", 'postgres', 'P2wd1111');
+$dbh = new PDO("pgsql:dbname=kqdraft;host=localhost", 'postgres', '');
 
 
 
