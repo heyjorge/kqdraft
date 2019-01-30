@@ -1,0 +1,34 @@
+<div class="panel panel-default panel-info">
+    <div class="panel-heading">
+        <h1>Draft Events for {{ location.name }}</h1>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>Choose an event:</h2>
+
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <a
+                            class="btn btn-success btn-block btn-lg"
+                            role="button"
+                            ng-click="createEvent()"
+                        >
+                            New Event
+                        </a>
+                    </li>
+                    <li class="list-group-item" ng-repeat="event in events">
+                        <a
+                            class="btn btn-default btn-block btn-lg"
+                            role="button"
+                            ui-sref="series({locationId: location.id_location, eventId : event.id_draft_event})"
+                        >
+                            Event #{{ event.id_draft_event }} - Started: {{ event.date_start }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

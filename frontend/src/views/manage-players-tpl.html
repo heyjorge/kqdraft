@@ -1,0 +1,49 @@
+<div class="panel panel-default panel-info">
+    <div class="panel-heading">
+        <h1>Modify Player Roles</h1>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12">
+                <button
+                    class="btn btn-primary btn-lg btn-block margin-ten-bottom"
+                    ng-click="backToEvent()"
+                >
+                    Back to event
+                </button>
+            </div>
+            <div class="col-xs-12">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="eventPlayer in eventPlayers">
+                        <h4 class="text-center">{{ eventPlayer.player_name }}</h3>
+                        <div class="btn-group btn-group-justified form-group" role="group">
+                            <div
+                                class="btn-group"
+                                role="group"
+                                aria-label="..."
+                                ng-repeat="preference in preferences"
+                            >
+                                <label
+                                    class="btn btn-default"
+                                    ng-model="eventPlayer.player_preference"
+                                    ng-click="updatePlayerPreference(
+                                        eventPlayer.id_player,
+                                        eventPlayer.player_name,
+                                        preference.id_preference
+                                    )"
+                                    uib-btn-radio="preference.name"
+                                >
+                                    {{ preference.label }}
+                                    <span class="pull-right" ng-if="preference.name === 'queen'">&#x1F451</span>
+                                    <span class="pull-right" ng-if="preference.name === 'drone'">&#x1F41D</span>
+                                    <span class="pull-right" ng-if="preference.name === 'queen_flex'">&#x1F4AA</span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

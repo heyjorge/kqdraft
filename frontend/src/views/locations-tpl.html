@@ -1,0 +1,57 @@
+<div class="panel panel-default panel-info">
+    <div class="panel-heading">
+        <h1>Killer Queen Locations</h1>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="margin-ten-bottom">
+                    <button
+                        type="button"
+                        class="btn btn-default btn-lg btn-block"
+                        ng-click="isCollapsed = !isCollapsed"
+                    >
+                        Add New Location
+                    </button>
+                </div>
+
+                <div class="margin-ten-bottom" uib-collapse="isCollapsed">
+                    <div class="well well-lg">
+                        <form>
+                            <div class="form-group">
+                                <label for="new-location-name">Location name</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="new-location-name"
+                                    placeholder="City - Location"
+                                    ng-model="newLocation.name"
+                                >
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-default btn-block"
+                                ng-click="addLocation()"
+                            >
+                                Add Location
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="location in locations">
+                        <a
+                            class="btn btn-default btn-block btn-lg"
+                            role="button"
+                            ui-sref="event({locationId : location.id_location})"
+                        >
+                            {{ location.name }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

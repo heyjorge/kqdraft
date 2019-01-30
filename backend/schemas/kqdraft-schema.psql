@@ -1,0 +1,206 @@
+-- Author: heyjorge
+--
+-- PostgreSQL database schema.
+-- Create tables, and relationships related to KQ players, locations, rounds, and stats.
+
+DROP DATABASE IF EXISTS kqdraft;
+
+CREATE DATABASE kqdraft;
+
+DROP SCHEMA IF EXISTS kqdraft CASCADE;
+CREATE SCHEMA kqdraft;
+
+set search_path="kqdraft";
+
+DROP TABLE IF EXISTS location;
+
+CREATE TABLE location (
+    id_location     bigserial       primary key,
+    name            varchar(64)     NOT NULL,
+    is_active       boolean         NOT NULL DEFAULT true,
+
+    CONSTRAINT uk_location_01
+        UNIQUE (name)
+);
+
+DROP TABLE IF EXISTS preference;
+
+CREATE TABLE preference (
+    id_preference   bigserial       primary key,
+    name            varchar(64)     NOT NULL,
+    label           varchar(64)     NOT NULL
+);
+
+INSERT INTO preference (name, label)
+    VALUES ('queen', 'Queen');
+
+INSERT INTO preference (name, label)
+    VALUES ('drone', 'Drone');
+
+INSERT INTO preference (name, label)
+    VALUES ('queen_flex', 'Flex');
+
+DROP TABLE IF EXISTS cabinet_side;
+
+CREATE TABLE cabinet_side (
+    id_cabinet_side bigserial       primary key,
+    name            varchar(4)
+);
+
+INSERT INTO cabinet_side (name)
+    VALUES ('blue');
+
+INSERT INTO cabinet_side (name)
+    VALUES ('gold');
+
+DROP TABLE IF EXISTS map;
+
+CREATE TABLE map (
+    id_map          bigserial       primary key,
+    name            varchar(10)
+);
+
+INSERT INTO map (name)
+    VALUES ('day');
+
+INSERT INTO map (name)
+    VALUES ('night');
+
+INSERT INTO map (name)
+    VALUES ('dusk');
+
+DROP TABLE IF EXISTS player;
+
+CREATE TABLE player (
+    id_player       bigserial       primary key,
+    id_location     int             NOT NULL,
+    id_preference   int             NOT NULL,
+    name            varchar(255)    NOT NULL,
+    win_percentage  int             NOT NULL DEFAULT 0,
+    elo             numeric(20,12)  NOT NULL DEFAULT 25.0,
+    elo_sigma       numeric(40,32)  NOT NULL DEFAULT 8.3333333333333333333333333333333,
+    is_active       boolean         NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT fk_player__location_01
+        FOREIGN KEY (id_location)
+        REFERENCES kqdraft.location (id_location)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_player__preference_01
+        FOREIGN KEY (id_preference)
+        REFERENCES kqdraft.preference (id_preference),
+
+    CONSTRAINT uk_player_01
+        UNIQUE (name, id_location, is_active)
+);
+
+DROP TABLE IF EXISTS draft_event;
+
+CREATE TABLE draft_event (
+    id_draft_event  bigserial                           primary key,
+    id_location     int                                 NOT NULL,
+    date_start      timestamp(0) without time zone      NOT NULL DEFAULT NOW(),
+    date_end        timestamp(0) without time zone,
+    password        varchar(64)                         DEFAULT NULL
+
+    CONSTRAINT fk_draft_event__location_01
+        FOREIGN KEY (id_location)
+        REFERENCES kqdraft.location (id_location)
+        ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS draft_event_player;
+
+CREATE TABLE draft_event_player (
+    id_draft_event_player   bigserial       primary key,
+    id_draft_event          int             NOT NULL,
+    id_player               int             NOT NULL,
+    is_active               boolean         NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT fk_draft_event_player__draft_event_01
+        FOREIGN KEY (id_draft_event)
+        REFERENCES kqdraft.draft_event (id_draft_event)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_draft_event_player__player_01
+        FOREIGN KEY (id_player)
+        REFERENCES kqdraft.player (id_player)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uk_draft_event_player_01
+        UNIQUE (id_draft_event, id_player)
+);
+
+DROP TABLE IF EXISTS draft_series CASCADE;
+
+CREATE TABLE draft_series (
+    id_draft_series         bigserial       primary key,
+    id_draft_event          int             NOT NULL,
+    series_length           int             NOT NULL DEFAULT 3,
+    current_round           int             NOT NULL DEFAULT 1,
+    is_best_of              boolean         NOT NULL DEFAULT FALSE,
+    is_active               boolean         NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT fk_draft_series__draft_event_01
+        FOREIGN KEY (id_draft_event)
+        REFERENCES kqdraft.draft_event (id_draft_event)
+        ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS draft_series_player;
+
+CREATE TABLE draft_series_player (
+    id_draft_series_player      bigserial           primary key,
+    id_draft_series             int                 NOT NULL,
+    id_draft_event_player       int                 NOT NULL,
+    id_cabinet_side             int                 NOT NULL,
+    is_queen                    boolean             NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT fk_draft_series_player__draft_series_01
+        FOREIGN KEY (id_draft_series)
+        REFERENCES kqdraft.draft_series (id_draft_series)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_draft_series_player__draft_event_player_01
+        FOREIGN KEY (id_draft_event_player)
+        REFERENCES kqdraft.draft_event_player (id_draft_event_player)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_draft_series_player__cabinet_side_01
+        FOREIGN KEY (id_cabinet_side)
+        REFERENCES kqdraft.cabinet_side (id_cabinet_side),
+
+    CONSTRAINT uk_draft_series_player_01
+        UNIQUE (id_draft_series, id_draft_event_player)
+);
+
+DROP TABLE IF EXISTS draft_series_round;
+
+CREATE TABLE draft_series_round (
+    id_draft_series_round  bigserial       primary key,
+    id_draft_series        int             NOT NULL,
+    id_map                 int             NOT NULL,
+    id_cabinet_side        int             NOT NULL,
+    series_round           int             NOT NULL,
+    is_winner              boolean,
+
+    CONSTRAINT fk_draft_series_round__draft_series_01
+        FOREIGN KEY (id_draft_series)
+        REFERENCES kqdraft.draft_series (id_draft_series)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_draft_series_round__map_01
+        FOREIGN KEY (id_map)
+        REFERENCES kqdraft.map (id_map),
+
+    CONSTRAINT fk_draft_series_round__cabinet_side_01
+        FOREIGN KEY (id_cabinet_side)
+        REFERENCES kqdraft.cabinet_side (id_cabinet_side),
+
+    CONSTRAINT uk_draft_series_round_01
+        UNIQUE (id_draft_series, id_cabinet_side, series_round)
+);
+
+DROP INDEX IF EXISTS in_draft_series_round_01;
+
+CREATE INDEX in_draft_series_round_01 ON draft_series_round(id_draft_series, id_cabinet_side, series_round);
