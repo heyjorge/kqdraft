@@ -5,7 +5,7 @@ Killer Queen Draft/Mixer App
 * Alter src/settings.php and src/trueskill.php to change database settings to point to a postgresql server
 * Run schema file against postgresql - it will create a database called kqdraft with the proper structure
 * Run composer install 
-* Serve the public folder via apache
+* Serve the public folder via apache - or run it locally on port 8080 using the php webserver command that's also in composer.json
 
 # Front end instructions
 * Install gem, sass, compass, npm, bower
